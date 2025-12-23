@@ -1,7 +1,87 @@
-*~
-*.swp
+#
+# NOTE! Please use 'git ls-files -i --exclude-standard -c'
+# command after changing this file, to see if there are
+# any tracked files which get ignored after the change.
+#
+
+# ===================================================================
+# Build output directories
+# ===================================================================
+# The build folder where the magic happens
+build/
+
+
+# ===================================================================
+# Third Party Dependencies
+# ===================================================================
+# The folder for third party dependencies such as GRRLIB 
+third_party/
+
+
+# ===================================================================
+# Compiled files and build artifacts
+# ===================================================================
+# Object files and dependencies (Make)
+*.o
+*.d
+
+# Static libraries
+*.a
+
+
+# ===================================================================
+# Executables and Wii Binaries
+# ===================================================================
+# The original binary name
 flapwii
-build
-Flapwii.dol
-Flapwii.elf
-.vscode
+Flapwii
+
+# Generic Wii extensions
+*.elf
+*.dol
+
+# Debugging maps
+*.map
+
+
+# ===================================================================
+# IDE / Editor configuration
+# ===================================================================
+# Visual Studio Code
+.vscode/
+
+# Programmer's Notepad
+*.pnproj
+*.pnps
+
+# Kate
+*.kate-swp
+
+# Vim / Generic Swap files
+*.swp
+*.swo
+
+
+# ===================================================================
+# OS-specific files
+# ===================================================================
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+
+# ===================================================================
+# Miscellaneous temporary files
+# ===================================================================
+# Backups and patches
+*~
+*.bak
+*.orig
+*.rej
+*.diff
+*.patch
+
+
+# EOF

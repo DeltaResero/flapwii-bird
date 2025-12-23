@@ -19,9 +19,9 @@ include $(DEVKITPPC)/wii_rules
 #---------------------------------------------------------------------------------
 TARGET              := Flapwii
 BUILD               := build
-DATA                := data
-SOURCES             := source
-INCLUDES            := source
+DATA                := assets/textures assets/fonts assets/sfx
+SOURCES             := src
+INCLUDES            := src
 LIBOGC_INC          := $(DEVKITPRO)/libogc/include
 LIBOGC_LIB          := $(DEVKITPRO)/libogc/lib/wii
 PORTLIBS            := $(DEVKITPRO)/portlibs/ppc
@@ -77,7 +77,7 @@ export DEPSDIR  := $(CURDIR)/$(BUILD)
 #---------------------------------------------------------------------------------
 # Use CXX for linking C++ projects, CC for standard C
 #---------------------------------------------------------------------------------
-ifeq ($(strip $(wildcard $(CURDIR)/source/*.cpp)),)
+ifeq ($(strip $(wildcard $(CURDIR)/src/*.cpp)),)
     export LD := $(CC)
 else
     export LD := $(CXX)

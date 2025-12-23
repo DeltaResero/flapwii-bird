@@ -1,7 +1,12 @@
+# Flapwii-Bird - Makefile
 #---------------------------------------------------------------------------------
-# Clear the implicit built in rules
+# Clear the implicit built-in rules
 #---------------------------------------------------------------------------------
 .SUFFIXES:
+.SECONDARY:
+
+#---------------------------------------------------------------------------------
+# Check if DEVKITPPC is set up correctly
 #---------------------------------------------------------------------------------
 ifeq ($(strip $(DEVKITPPC)),)
 $(error "Please set DEVKITPPC in your environment. export DEVKITPPC=<path to>devkitPPC")
@@ -10,144 +15,171 @@ endif
 include $(DEVKITPPC)/wii_rules
 
 #---------------------------------------------------------------------------------
-# TARGET is the name of the output
-# BUILD is the directory where object files & intermediate files will be placed
-# SOURCES is a list of directories containing source code
-# INCLUDES is a list of directories containing extra header files
+# Project Configuration
 #---------------------------------------------------------------------------------
-TARGET		:=	$(notdir $(CURDIR))
-BUILD		:=	build
-SOURCES		:=	source source/gfx
-DATA		:=	data
-INCLUDES	:=
+TARGET              := Flapwii
+BUILD               := build
+DATA                := data
+SOURCES             := source
+INCLUDES            := source
+LIBOGC_INC          := $(DEVKITPRO)/libogc/include
+LIBOGC_LIB          := $(DEVKITPRO)/libogc/lib/wii
+PORTLIBS            := $(DEVKITPRO)/portlibs/ppc
 
 #---------------------------------------------------------------------------------
-# options for code generation
+# Third Party Library Configuration (GRRLIB)
 #---------------------------------------------------------------------------------
-
-CFLAGS	= -g -O2 -Wall $(MACHDEP) $(INCLUDE)
-CXXFLAGS	=	$(CFLAGS)
-
-#LDFLAGS	=	-g $(MACHDEP) -Wl,-Map,$(notdir $@).map
-LDFLAGS = -g $(MACHDEP) -Wl,-Map,$(notdir $@).map -Wl,--section-start,.init=0x81000000
-
-#---------------------------------------------------------------------------------
-# any extra libraries we wish to link with the project
-#---------------------------------------------------------------------------------
-LIBS	:=	-lgrrlib -lfreetype -lbz2 -lpngu -lpng -ljpeg -lz -lfat -lwiiuse -lbte -lasnd -logc -lm -lvorbisidec -logg 
+TP_DIR          := third_party
+GRRLIB_VER      := v4.6.1
+GRRLIB_URL      := https://github.com/GRRLIB/GRRLIB/archive/refs/tags/$(GRRLIB_VER).tar.gz
+GRRLIB_ROOT     := $(TP_DIR)/grrlib
+GRRLIB_INTERNAL := $(GRRLIB_ROOT)/GRRLIB/GRRLIB
+PNGU_DIR        := $(GRRLIB_ROOT)/GRRLIB/lib/pngu
 
 #---------------------------------------------------------------------------------
-# list of directories containing libraries, this must be the top level containing
-# include and lib
+# Compiler and tools
 #---------------------------------------------------------------------------------
-LIBDIRS	:= $(CURDIR)/$(GRRLIB) $(PORTLIBS)
+CC      = $(DEVKITPPC)/bin/powerpc-eabi-gcc
+CXX     = $(DEVKITPPC)/bin/powerpc-eabi-g++
+STRIP   = $(DEVKITPPC)/bin/powerpc-eabi-strip
 
 #---------------------------------------------------------------------------------
-# no real need to edit anything past this point unless you need to add additional
-# rules for different file extensions
+# Options for code generation
 #---------------------------------------------------------------------------------
+CFLAGS      := -g -O3 -Wall -DGEKKO $(MACHDEP) $(INCLUDE)
+CXXFLAGS    := $(CFLAGS) -Wno-register
+LDFLAGS     := -g $(MACHDEP) -Wl,-Map,$(notdir $@).map -Wl,--section-start,.init=0x81000000
+
+#---------------------------------------------------------------------------------
+# Libraries to link with
+#---------------------------------------------------------------------------------
+LIBS        := -lfreetype -lbz2 -lpng -ljpeg -lz -lfat \
+               -lwiiuse -lbte -lasnd -logc -lm -lvorbisidec -logg
+
+#---------------------------------------------------------------------------------
+# List of directories containing libraries
+#---------------------------------------------------------------------------------
+LIBDIRS     := $(PORTLIBS)
+
+#=================================================================================
+# BUILD LOGIC - Top level makefile
+#=================================================================================
 ifneq ($(BUILD),$(notdir $(CURDIR)))
 #---------------------------------------------------------------------------------
+export OUTPUT   := $(CURDIR)/$(TARGET)
+export VPATH    := $(foreach dir,$(SOURCES),$(CURDIR)/$(dir)) \
+                   $(foreach dir,$(DATA),$(CURDIR)/$(dir)) \
+                   $(CURDIR)/$(GRRLIB_INTERNAL) \
+                   $(CURDIR)/$(PNGU_DIR)
 
-export OUTPUT	:=	$(CURDIR)/$(TARGET)
-
-export VPATH	:=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir)) \
-					$(foreach dir,$(DATA),$(CURDIR)/$(dir))
-
-export DEPSDIR	:=	$(CURDIR)/$(BUILD)
-
-#---------------------------------------------------------------------------------
-# automatically build a list of object files for our project
-#---------------------------------------------------------------------------------
-CFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
-CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
-sFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
-SFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.S)))
-BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
+export DEPSDIR  := $(CURDIR)/$(BUILD)
 
 #---------------------------------------------------------------------------------
-# use CXX for linking C++ projects, CC for standard C
+# Use CXX for linking C++ projects, CC for standard C
 #---------------------------------------------------------------------------------
-ifeq ($(strip $(CPPFILES)),)
-	export LD	:=	$(CC)
+ifeq ($(strip $(wildcard $(CURDIR)/source/*.cpp)),)
+    export LD := $(CC)
 else
-	export LD	:=	$(CXX)
+    export LD := $(CXX)
 endif
 
-export OFILES_BIN	:=	$(addsuffix .o,$(BINFILES))
-export OFILES_SOURCES := $(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(sFILES:.s=.o) $(SFILES:.S=.o)
-export OFILES := $(OFILES_BIN) $(OFILES_SOURCES)
-
-export HFILES := $(addsuffix .h,$(subst .,_,$(BINFILES)))
-
 #---------------------------------------------------------------------------------
-# build a list of include paths
+# Build a list of include paths
 #---------------------------------------------------------------------------------
-export INCLUDE	:=	$(foreach dir,$(INCLUDES), -iquote $(CURDIR)/$(dir)) \
-					$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
-					-I$(CURDIR)/$(BUILD) \
-					-I$(LIBOGC_INC)
+export INCLUDE  := $(foreach dir,$(INCLUDES),-iquote $(CURDIR)/$(dir)) \
+                   $(foreach dir,$(LIBDIRS),-I$(dir)/include) \
+                   $(foreach dir,$(LIBDIRS),-I$(dir)/include/freetype2) \
+                   -I$(LIBOGC_INC) \
+                   -I$(CURDIR)/$(GRRLIB_INTERNAL) \
+                   -I$(CURDIR)/$(PNGU_DIR) \
+                   -I$(CURDIR)/$(BUILD)
 
 #---------------------------------------------------------------------------------
-# build a list of library paths
+# Build a list of library paths
 #---------------------------------------------------------------------------------
-export LIBPATHS	:= -L$(LIBOGC_LIB) $(foreach dir,$(LIBDIRS),-L$(dir)/lib)
+export LIBPATHS := $(foreach dir,$(LIBDIRS),-L$(dir)/lib) \
+                   -L$(LIBOGC_LIB)
 
-export OUTPUT	:=	$(CURDIR)/$(TARGET)
-.PHONY: $(BUILD) clean
+.PHONY: $(BUILD) clean distclean all run download_grrlib
 
-#---------------------------------------------------------------------------------
+all: download_grrlib $(BUILD)
+
+download_grrlib:
+	@if [ ! -f "$(GRRLIB_INTERNAL)/grrlib.h" ]; then \
+		echo "Downloading GRRLIB $(GRRLIB_VER)..."; \
+		rm -rf $(GRRLIB_ROOT); \
+		mkdir -p $(GRRLIB_ROOT); \
+		curl -L $(GRRLIB_URL) -o grrlib.tar.gz; \
+		tar -xzf grrlib.tar.gz -C $(GRRLIB_ROOT) --strip-components=1; \
+		rm grrlib.tar.gz; \
+		echo "GRRLIB ready."; \
+	fi
+
 $(BUILD):
 	@[ -d $@ ] || mkdir -p $@
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 
-#---------------------------------------------------------------------------------
 clean:
-	@echo clean ...
-	@rm -fr $(BUILD) $(OUTPUT).elf $(OUTPUT).dol
+	@echo "Cleaning project files..."
+	@rm -fr $(BUILD) $(OUTPUT).elf $(OUTPUT).dol $(OUTPUT).map
 
-#---------------------------------------------------------------------------------
+distclean: clean
+	@echo "Cleaning third_party libraries..."
+	@rm -rf $(TP_DIR)
+
 run:
 	wiiload $(TARGET).dol
 
-
-#---------------------------------------------------------------------------------
+#=================================================================================
+# BUILD LOGIC - Recursive makefile (inside BUILD)
+#=================================================================================
 else
+#---------------------------------------------------------------------------------
+# Discover source files now that they exist
+GRRLIB_C    := $(notdir $(wildcard ../$(GRRLIB_INTERNAL)/*.c))
+PNGU_C      := $(notdir $(wildcard ../$(PNGU_DIR)/*.c))
+CFILES      := $(foreach dir,$(SOURCES),$(notdir $(wildcard ../$(dir)/*.c))) $(GRRLIB_C) $(PNGU_C)
+CPPFILES    := $(foreach dir,$(SOURCES),$(notdir $(wildcard ../$(dir)/*.cpp)))
+sFILES      := $(foreach dir,$(SOURCES),$(notdir $(wildcard ../$(dir)/*.s)))
+SFILES      := $(foreach dir,$(SOURCES),$(notdir $(wildcard ../$(dir)/*.S)))
+BINFILES    := $(foreach dir,$(DATA),$(notdir $(wildcard ../$(dir)/*.*)))
 
-DEPENDS	:=	$(OFILES:.o=.d)
+OFILES_BIN := $(addsuffix .o,$(BINFILES))
+OFILES_SRC := $(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(sFILES:.s=.o) $(SFILES:.S=.o)
+OFILES     := $(OFILES_BIN) $(OFILES_SRC)
+
+DEPENDS :=  $(OFILES:.o=.d)
 
 #---------------------------------------------------------------------------------
-# main targets
+# Main Targets
 #---------------------------------------------------------------------------------
 $(OUTPUT).dol: $(OUTPUT).elf
 $(OUTPUT).elf: $(OFILES)
+	@echo "Linking ELF file..."
+	@$(LD) -o $@ $(OFILES) $(LIBPATHS) $(LDFLAGS) $(LIBS)
+	@echo "Stripping ELF file..."
+	@$(STRIP) $@
 
-$(OFILES_SOURCES) : $(HFILES)
+#---------------------------------------------------------------------------------
+# Binary Data Rules
+#---------------------------------------------------------------------------------
+%.png.o : %.png
+	@echo $(notdir $<)
+	@$(bin2o)
+
+%.ttf.o : %.ttf
+	@echo $(notdir $<)
+	@$(bin2o)
+
+%.ogg.o : %.ogg
+	@echo $(notdir $<)
+	@$(bin2o)
 
 #---------------------------------------------------------------------------------
-# This rule links in binary data with the .png extension
-#---------------------------------------------------------------------------------
-%.png.o	:	%.png
-#---------------------------------------------------------------------------------
-	@echo $(notdir $<)
-	$(bin2o)
-#---------------------------------------------------------------------------------
-# This rule links in binary data with the .ttf extension
-#---------------------------------------------------------------------------------
-%.ttf.o	:	%.ttf
-#---------------------------------------------------------------------------------
-	@echo $(notdir $<)
-	$(bin2o)
-#---------------------------------------------------------------------------------
-# This rule links in binary data with the .ogg extension
-#---------------------------------------------------------------------------------
-%.ogg.o	%_ogg.h :	%.ogg
-#---------------------------------------------------------------------------------
-	@echo $(notdir $<)
-	$(bin2o)
-
 -include $(DEPENDS)
 
 #---------------------------------------------------------------------------------
 endif
 #---------------------------------------------------------------------------------
+
+# EOF

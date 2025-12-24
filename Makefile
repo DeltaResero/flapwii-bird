@@ -17,7 +17,7 @@ include $(DEVKITPPC)/wii_rules
 #---------------------------------------------------------------------------------
 # Project Configuration
 #---------------------------------------------------------------------------------
-TARGET              := Flapwii
+TARGET              := boot
 BUILD               := build
 DATA                := assets/textures assets/fonts assets/sfx
 SOURCES             := src
@@ -172,6 +172,10 @@ $(OUTPUT).elf: $(OFILES)
 	@$(bin2o)
 
 %.ogg.o : %.ogg
+	@echo $(notdir $<)
+	@$(bin2o)
+
+%.wav.o : %.wav
 	@echo $(notdir $<)
 	@$(bin2o)
 

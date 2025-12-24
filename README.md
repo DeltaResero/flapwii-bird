@@ -1,10 +1,10 @@
 # Flapwii Bird
 
-Flapwii Bird is a recreation for the Wii of the viral hit [*Flappy Bird*](
-https://en.wikipedia.org/wiki/Flappy_Bird). It's designed for use with the
+Flapwii Bird is a recreation for the Wii of the viral hit [*Flappy Bird*]
+(https://en.wikipedia.org/wiki/Flappy_Bird). It's designed for use with the
 [Homebrew Channel](https://wiibrew.org/wiki/Homebrew_Channel). While not an
-exact clone, the game captures the fun and addictively frustrating nature
-of the classic gameplay loop. It offers a deceptively simple experience that
+exact clone, the game attempts to capture the fun and addictively frustrating
+nature of the classic gameplay. It offers a deceptively simple experience that
 functionally mirrors the original's 2011 mechanics.
 
 ## About This Version
@@ -16,6 +16,91 @@ and stands as a testament to the creator's goal to "give it a good try and
 actually succeed" at Wii development. The goal of this continuation fork is to
 modernize the codebase and continue development with new features and fully
 open source assets.
+
+<br>
+
+<p align="center">
+  <img src="extras/Screenshot_Gameplay-12-24-2025.png" alt="Flapwii Bird Gameplay Screenshot">
+</p>
+
+[![Latest Release][release-img]][release-url]
+[![View All Releases][downloads-img]][downloads-url]
+[![License][license-img]][license-url]
+[![Codacy Badge][codacy-img]][codacy-url]
+
+<!-- Link Definitions -->
+[release-img]: https://img.shields.io/github/v/release/DeltaResero/flapwii-bird?label=Latest%20Release
+[release-url]: https://github.com/DeltaResero/flapwii-bird/releases/latest
+[downloads-img]: https://img.shields.io/badge/Downloads-View_All_Releases-blue
+[downloads-url]: https://github.com/DeltaResero/flapwii-bird/releases
+[license-img]: https://img.shields.io/badge/license-GPLv3+-blue.svg
+[license-url]: https://github.com/DeltaResero/flapwii-bird/blob/master/LICENSE
+[codacy-img]: https://app.codacy.com/project/badge/Grade/7be32ebc2796441da2bdbc3f889100af
+[codacy-url]: https://app.codacy.com/gh/DeltaResero/flapwii-bird/dashboard
+
+<br><br>
+
+## How to Build
+
+### Prerequisites
+
+To build Flapwii Bird, you'll need the **devkitPro devkitPPC** toolchain
+installed. To set up the devkitPro devkitPPC PowerPC build system, follow the
+instructions on the official devkitPro wiki:
+
+- [Getting Started with devkitPro](https://devkitpro.org/wiki/Getting_Started)
+- [devkitPro Pacman](https://devkitpro.org/wiki/devkitPro_pacman)
+
+After setting up devkitPPC including environment variables, use (dkp-)pacman
+to install the following dependencies:
+
+```bash
+libogc
+libfat-ogc
+ppc-freetype
+ppc-bzip2
+ppc-libpng
+ppc-libjpeg-turbo
+ppc-zlib
+ppc-libvorbisidec
+ppc-libogg
+```
+
+Note: The **GRRLIB** dependency is downloaded automatically by the Makefile; you
+do not need to install it manually.
+
+### Build Instructions
+
+1.  Clone the repository to your local machine.
+2.  Open a terminal or command prompt in the project's root directory.
+3.  Run the command `make`.
+
+The build process should create a `boot.dol` file inside the `apps/flapwii`
+directory if the devkitPPC toolchain and dependencies were all set up and
+installed properly.
+
+<br>
+
+## How to Install
+
+1.  Ensure you have the [Homebrew Channel](https://wiibrew.org/wiki/Homebrew_Channel)
+    installed on your Wii.
+2.  Copy the `apps` folder from the project root to the root of your SD card or
+    USB drive.
+3.  Copy the generated `boot.dol` file to the `apps/flapwii` folder on the SD
+    card.
+4.  Ensure the `apps/flapwii` folder contains `boot.dol`, `icon.png`, and
+    `meta.xml`.
+5.  Insert the SD card or USB drive into your Wii and launch Flapwii Bird from
+    the Homebrew Channel.
+
+### Cleaning the Build
+
+If you need to clean up build artifacts (such as for rebuilding), run
+`make clean`. To remove downloaded third-party libraries (GRRLIB) as well,
+run `make distclean`.
+
+<br>
 
 ## Disclaimer and Licensing
 

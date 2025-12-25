@@ -1,0 +1,93 @@
+###############################################################################
+# GIT ATTRIBUTES
+#
+# This file controls how git treats files. It is primarily used here to
+# enforce Unix-style (LF) line endings across the project, regardless of
+# the developer's operating system.
+###############################################################################
+
+
+# =============================================================================
+# DEFAULT BEHAVIOR
+# =============================================================================
+# Auto-detect text files and normalize to LF.
+*                           text=auto eol=lf
+
+# =============================================================================
+# SOURCE CODE
+# =============================================================================
+# C and C++ source files.
+*.c                         text eol=lf
+*.cc                        text eol=lf
+*.cpp                       text eol=lf
+*.cxx                       text eol=lf
+
+# C and C++ header files.
+*.h                         text eol=lf
+*.hh                        text eol=lf
+*.hpp                       text eol=lf
+
+# =============================================================================
+# SCRIPTS & EXECUTABLES
+# =============================================================================
+# Standard script extensions.
+*.sh                        text eol=lf
+*.pl                        text eol=lf
+*.py                        text eol=lf
+
+# =============================================================================
+# BUILD SYSTEM & CONFIGURATION
+# =============================================================================
+# Make configuration.
+Makefile                    text eol=lf
+
+# Git configuration
+.gitignore                  text eol=lf
+.gitattributes              text eol=lf
+.editorconfig               text eol=lf
+
+# =============================================================================
+# DOCUMENTATION
+# =============================================================================
+# Markdown.
+*.md                        text eol=lf
+
+# Standard project documentation files.
+LICENSE                     text eol=lf
+
+# =============================================================================
+# ASSETS & THEMES
+# =============================================================================
+# Vector graphics (XML).
+*.svg                       text eol=lf
+*.xml                       text eol=lf
+
+# =============================================================================
+# BINARY FILES
+# =============================================================================
+# Images and Icons.
+*.png                       binary
+*.jpg                       binary
+*.jpeg                      binary
+*.gif                       binary
+*.ico                       binary
+
+# Audio
+*.wav                       binary
+*.ogg                       binary
+
+# Archives and Compressed files.
+*.gz                        binary
+*.zip                       binary
+*.tar                       binary
+
+# Fonts.
+*.ttf                       binary
+*.otf                       binary
+
+# Wii Binaries
+*.dol                       binary
+*.elf                       binary
+
+
+# EOF

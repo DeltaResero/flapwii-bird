@@ -13,8 +13,8 @@
 
 struct Vec2
 {
-	float x;
-	float y;
+  float x;
+  float y;
 };
 
 // EOF

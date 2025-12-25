@@ -11,21 +11,22 @@
 
 #pragma once
 
-#include <grrlib.h>
 #include <gccore.h>
-
+#include <grrlib.h>
 #include <stdlib.h>
 
-class Pipe {
+class Pipe
+{
 private:
-	const float speed = 1;
-public:
-	float x, y;
+  const float speed = 1;
 
-	Pipe();
-	~Pipe();
-	void move();
-	void reset();
+public:
+  float x, y;
+
+  Pipe();
+  ~Pipe();
+  void move();
+  void reset();
 };
 
 // EOF

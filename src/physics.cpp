@@ -46,6 +46,11 @@ Vec2 Physics::update_bird(bool flap, Pipe pipe_1, Pipe pipe_2)
   return Physics::position;
 }
 
+Vec2 Physics::get_position() const
+{
+  return position;
+}
+
 void Physics::reset()
 {
   Physics::position.x = BIRD_START_X;

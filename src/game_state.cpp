@@ -116,37 +116,57 @@ void GameState::render(GRRLIB_texImg* bird_tex, GRRLIB_texImg* pipe_tex,
 {
   if (is_menu)
   {
-    // Render menu
-    GRRLIB_PrintfTTF(165, 70, title_font, "Flapwii Bird", 96, 0xf6ef29ff);
-    GRRLIB_PrintfTTF(175, 300, title_font, "Press A to flap", 72, 0xf6ef29ff);
-
-    // Render cursor (Bird)
-    GRRLIB_DrawImg(cursor_x, cursor_y, bird_tex, 0, 1, 1, GRRLIB_WHITE);
+    render_menu(bird_tex, title_font);
   }
   else
   {
-    // Render game
-    // Draw pipes
-    GRRLIB_DrawImg(pipe_1.x, pipe_1.y, pipe_tex, 0, 1, 1, GRRLIB_WHITE);
-    GRRLIB_DrawImg(pipe_1.x, pipe_1.y - PIPE_GAP, pipe_tex, 180, -1, 1,
-                   GRRLIB_WHITE);
-
-    if (!first_round)
-    {
-      GRRLIB_DrawImg(pipe_2.x, pipe_2.y, pipe_tex, 0, 1, 1, GRRLIB_WHITE);
-      GRRLIB_DrawImg(pipe_2.x, pipe_2.y - PIPE_GAP, pipe_tex, 180, -1, 1,
-                     GRRLIB_WHITE);
-    }
-
-    // Draw bird using cached position to avoid double-physics update
-    GRRLIB_DrawImg(BIRD_START_X, bird_position.y, bird_tex,
-                   physics.velocity * 1.3, BIRD_SCALE, BIRD_SCALE,
-                   GRRLIB_WHITE);
+    render_game(bird_tex, pipe_tex);
   }
 
-  // Always render score
+  render_score(font);
+}
+
+void GameState::render_menu(GRRLIB_texImg* bird_tex, GRRLIB_ttfFont* title_font)
+{
+  GRRLIB_PrintfTTF(165, 70, title_font, "Flapwii Bird", 96, 0xf6ef29ff);
+  GRRLIB_PrintfTTF(175, 300, title_font, "Press A to flap", 72, 0xf6ef29ff);
+  GRRLIB_DrawImg(cursor_x, cursor_y, bird_tex, 0, 1, 1, GRRLIB_WHITE);
+}
+
+void GameState::render_pipe(GRRLIB_texImg* pipe_tex, const Pipe& pipe)
+{
+  // Bottom pipe
+  GRRLIB_DrawImg(pipe.x, pipe.y, pipe_tex, 0, 1, 1, GRRLIB_WHITE);
+  // Top pipe (flipped)
+  GRRLIB_DrawImg(pipe.x, pipe.y - PIPE_GAP, pipe_tex, 180, -1, 1, GRRLIB_WHITE);
+}
+
+void GameState::render_bird(GRRLIB_texImg* bird_tex, float x, float y, float rotation)
+{
+  GRRLIB_DrawImg(x, y, bird_tex, rotation, BIRD_SCALE, BIRD_SCALE, GRRLIB_WHITE);
+}
+
+void GameState::render_score(GRRLIB_ttfFont* font)
+{
   GRRLIB_PrintfTTF(20, 10, font, score_text, 24, 0xf6ef23ff);
   GRRLIB_PrintfTTF(150, 10, font, highscore_text, 24, 0xf6ef23ff);
+}
+
+void GameState::render_game(GRRLIB_texImg* bird_tex, GRRLIB_texImg* pipe_tex)
+{
+  // Render first pipe
+  render_pipe(pipe_tex, pipe_1);
+
+  // Render second pipe if active
+  if (!first_round)
+  {
+    render_pipe(pipe_tex, pipe_2);
+  }
+
+  // Render bird
+  Vec2 bird_pos = physics.get_position();
+  float bird_rotation = physics.velocity * 1.3f;
+  render_bird(bird_tex, BIRD_START_X, bird_pos.y, bird_rotation);
 }
 
 void GameState::load_highscore()

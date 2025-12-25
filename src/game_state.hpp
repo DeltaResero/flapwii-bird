@@ -44,6 +44,13 @@ private:
   void handle_collision();
   void update_score_text();
 
+  // Render helpers
+  void render_menu(GRRLIB_texImg* bird_tex, GRRLIB_ttfFont* title_font);
+  void render_game(GRRLIB_texImg* bird_tex, GRRLIB_texImg* pipe_tex);
+  void render_pipe(GRRLIB_texImg* pipe_tex, const Pipe& pipe);
+  void render_bird(GRRLIB_texImg* bird_tex, float x, float y, float rotation);
+  void render_score(GRRLIB_ttfFont* font);
+
 public:
   GameState();
   ~GameState();

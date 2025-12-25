@@ -31,6 +31,7 @@ public:
   ~Physics();
 
   Vec2 update_bird(bool flap, Pipe pipe_1, Pipe pipe_2);
+  Vec2 get_position() const;
 
   float velocity;
   bool pipe_iter = false;

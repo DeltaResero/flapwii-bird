@@ -1,0 +1,45 @@
+###############################################################################
+# EDITORCONFIG
+#
+# This file helps maintain consistent coding styles across various editors
+# and IDEs. It automatically configures settings like indentation style
+# and line endings for new edits.
+#
+# Learn more at: http://editorconfig.org
+###############################################################################
+
+# This is the root of the project, so stop searching for .editorconfig files.
+root = true
+
+
+# =============================================================================
+# GLOBAL SETTINGS
+# =============================================================================
+# These settings apply to all files in the project.
+[*]
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+charset = utf-8
+
+# =============================================================================
+# SOURCE CODE
+# =============================================================================
+# C and C++ source and header files should use 2 spaces for indentation.
+[*.{c,h,cc,cpp,cxx,hh,hpp}]
+indent_style = space
+indent_size = 2
+
+# =============================================================================
+# BUILD & SCRIPTS
+# =============================================================================
+[*.{sh,pl,py}]
+indent_style = space
+indent_size = 2
+
+# Makefiles are a special case and REQUIRE tabs for indentation.
+[Makefile]
+indent_style = tab
+
+
+# EOF

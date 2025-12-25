@@ -40,6 +40,6 @@ indent_size = 2
 # Makefiles are a special case and REQUIRE tabs for indentation.
 [Makefile]
 indent_style = tab
-
+indent_size = 2
 
 # EOF

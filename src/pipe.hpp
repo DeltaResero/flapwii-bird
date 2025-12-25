@@ -11,8 +11,6 @@
 
 #pragma once
 
-#include <gccore.h>
-#include <grrlib.h>
 #include <stdlib.h>
 
 class Pipe

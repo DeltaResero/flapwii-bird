@@ -9,15 +9,18 @@
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 
+// System headers
 #include <gccore.h>
 #include <wiiuse/wpad.h>
 
+// Third-party libraries
+#include <grrlib.h>
+
+// Project headers
 #include "constants.hpp"
 #include "game_state.hpp"
 
-// GRRLIB
-#include <grrlib.h>
-
+// Generated asset headers
 #include "bird_png.h"
 #include "flappy_ttf.h"
 #include "font_ttf.h"

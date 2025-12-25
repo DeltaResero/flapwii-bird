@@ -9,11 +9,18 @@
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 
+// C++ Standard Library
+#include <fstream>
+
+// C Standard Library
+#include <stdio.h>
+
+// System libraries
+#include <fat.h>
+
+// Project headers
 #include "game_state.hpp"
 #include "constants.hpp"
-#include <fat.h>
-#include <fstream>
-#include <stdio.h>
 
 GameState::GameState()
   : first_round(true)

@@ -1,4 +1,4 @@
-// source/pipe.hpp
+// src/pipe.hpp
 // SPDX-License-Identifier: GPL-3.0-or-later
 //
 // Flapwii Bird

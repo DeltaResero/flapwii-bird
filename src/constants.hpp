@@ -11,6 +11,8 @@
 
 #pragma once
 
+#include <gccore.h>
+
 // Screen dimensions
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
@@ -30,5 +32,9 @@ const float PIPE_SPEED = 1.0f;
 // Wiimote constants
 const int WSP_POINTER_CORRECTION_Y = 200;
 const double WIIMOTE_SENSITIVITY = 0.7;
+
+// Colors
+const u32 GRRLIB_BLACK = 0x000000FF;
+const u32 GRRLIB_WHITE = 0xFFFFFFFF;
 
 // EOF

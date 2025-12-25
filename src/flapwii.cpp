@@ -9,66 +9,19 @@
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 
-#include <fat.h>
 #include <gccore.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <wiiuse/wpad.h>
 
-#include <fstream>
-
 #include "constants.hpp"
-
-const float bird_x = BIRD_START_X;
-
-#include "physics.hpp"
-#include "pipe.hpp"
-#include "vec2.hpp"
+#include "game_state.hpp"
 
 // GRRLIB
 #include <grrlib.h>
-
-#define GRRLIB_BLACK 0x000000FF
-#define GRRLIB_WHITE 0xFFFFFFFF
-
-/*
- *	Assets
- */
 
 #include "bird_png.h"
 #include "flappy_ttf.h"
 #include "font_ttf.h"
 #include "pipe_png.h"
-
-char score[32];
-char highscore[32];
-
-int score_num = 0;
-int highscore_num = 0;
-
-int getHighscore()
-{
-  fatInitDefault();
-  int tempScore = 0;
-  std::ifstream save;
-  save.open("/apps/flapwii/game.sav", std::ifstream::in);
-
-  if (!save.fail())
-  {
-    save >> tempScore;
-  }
-  save.close();
-  return tempScore;
-}
-void saveHighscore()
-{
-  std::ofstream save;
-  save.open("/apps/flapwii/game.sav");
-
-  save << highscore_num;
-
-  save.close();
-}
 
 int main(void)
 {
@@ -78,128 +31,41 @@ int main(void)
   GRRLIB_texImg* pipe = GRRLIB_LoadTexture(pipe_png);
 
   GRRLIB_ttfFont* font = GRRLIB_LoadTTF(font_ttf, font_ttf_size);
-  GRRLIB_ttfFont* flappy_font = GRRLIB_LoadTTF(flappy_ttf, font_ttf_size);
+  GRRLIB_ttfFont* flappy_font = GRRLIB_LoadTTF(flappy_ttf, flappy_ttf_size);
 
   WPAD_Init();
   WPAD_SetDataFormat(WPAD_CHAN_0, WPAD_FMT_BTNS_ACC_IR);
 
-  Pipe pipe_1;
-  Pipe pipe_2;
-
-  Physics physics;
-
-  bool first_round = true;
-
-  bool isMenu = true;
-
-  Vec2 position;
-
+  GameState game;
   ir_t ir;
-
-  highscore_num = getHighscore();
 
   while (1)
   {
     GRRLIB_FillScreen(0x0195c3ff);
     WPAD_ScanPads();
-    WPAD_SetDataFormat(WPAD_CHAN_0, WPAD_FMT_BTNS_ACC_IR);
     WPAD_IR(WPAD_CHAN_0, &ir);
 
-    u16 buttonsDown = WPAD_ButtonsDown(WPAD_CHAN_0);
+    u32 buttons = WPAD_ButtonsDown(WPAD_CHAN_0);
 
-    if (buttonsDown & WPAD_BUTTON_HOME)
+    if (buttons & WPAD_BUTTON_HOME)
     {
       break;
     }
 
-    if (isMenu)
-    {
-      int cursorX = (ir.sx) * WIIMOTE_SENSITIVITY;
-      int cursorY = (ir.sy - WSP_POINTER_CORRECTION_Y) * WIIMOTE_SENSITIVITY;
-
-      GRRLIB_PrintfTTF(165, 70, flappy_font, "Flapwii Bird", 96, 0xf6ef29ff);
-      GRRLIB_PrintfTTF(175, 300, flappy_font, "Press A to flap", 72,
-                       0xf6ef29ff);
-      GRRLIB_DrawImg(cursorX, cursorY, bird, 0, 1, 1, GRRLIB_WHITE);
-      if (buttonsDown & WPAD_BUTTON_A)
-      {
-        isMenu = false;
-      }
-    }
-    else
-    {
-      position =
-          physics.update_bird(buttonsDown & WPAD_BUTTON_A, pipe_1, pipe_2);
-      score_num = physics.score;
-
-      // Pipe 1
-      GRRLIB_DrawImg(pipe_1.x, pipe_1.y, pipe, 0, 1, 1, GRRLIB_WHITE);
-      GRRLIB_DrawImg(pipe_1.x, pipe_1.y - PIPE_GAP, pipe, 180, -1, 1, GRRLIB_WHITE);
-      pipe_1.move();
-
-      if (pipe_1.x < SCREEN_WIDTH / 2 && first_round)
-      {
-        first_round = false;
-      }
-
-      if (pipe_1.x < -(PIPE_WIDTH - 1))
-      {
-        pipe_1.reset();
-      }
-
-      // Pipe 2
-
-      if (!first_round)
-      {
-        GRRLIB_DrawImg(pipe_2.x, pipe_2.y, pipe, 0, 1, 1, GRRLIB_WHITE);
-        GRRLIB_DrawImg(pipe_2.x, pipe_2.y - PIPE_GAP, pipe, 180, -1, 1,
-                       GRRLIB_WHITE);
-        pipe_2.move();
-
-        if (pipe_2.x < -(PIPE_WIDTH - 1))
-        {
-          pipe_2.reset();
-        }
-      }
-
-      // Collision Detection
-      if (physics.dead)
-      {
-        first_round = true;
-        pipe_1.reset();
-        pipe_2.reset();
-
-        score_num = 0;
-        isMenu = true;
-      }
-
-      // Show Bird
-      GRRLIB_DrawImg(bird_x, position.y, bird, physics.velocity * 1.3, BIRD_SCALE, BIRD_SCALE,
-                     GRRLIB_WHITE);
-    }
-
-    // Show Score
-    sprintf(score, "Score: %i", score_num);
-    GRRLIB_PrintfTTF(20, 10, font, score, 24, 0xf6ef23ff);
-
-    // and Highscore
-    if (score_num > highscore_num)
-    {
-      highscore_num = score_num;
-    }
-
-    sprintf(highscore, "Highscore: %i", highscore_num);
-    GRRLIB_PrintfTTF(150, 10, font, highscore, 24, 0xf6ef23ff);
+    game.update(buttons, ir);
+    game.render(bird, pipe, font, flappy_font);
 
     GRRLIB_Render();
   }
 
-  saveHighscore();
-
+  // Cleanup
   GRRLIB_FreeTTF(font);
+  GRRLIB_FreeTTF(flappy_font);
   GRRLIB_FreeTexture(bird);
+  GRRLIB_FreeTexture(pipe);
+  GRRLIB_Exit();
 
-  exit(0);
+  return 0;
 }
 
 // EOF

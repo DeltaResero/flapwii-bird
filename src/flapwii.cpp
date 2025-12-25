@@ -83,14 +83,14 @@ int main(void)
   WPAD_Init();
   WPAD_SetDataFormat(WPAD_CHAN_0, WPAD_FMT_BTNS_ACC_IR);
 
-  auto pipe_1 = Pipe();
-  auto pipe_2 = Pipe();
+  Pipe pipe_1;
+  Pipe pipe_2;
 
-  auto physics = Physics();
+  Physics physics;
 
-  auto first_round = true;
+  bool first_round = true;
 
-  auto isMenu = true;
+  bool isMenu = true;
 
   Vec2 position;
 

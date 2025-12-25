@@ -18,7 +18,7 @@
 class Pipe
 {
 private:
-  const float speed = 1;
+  float speed;
 
 public:
   float x, y;

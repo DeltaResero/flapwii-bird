@@ -10,11 +10,13 @@
 // (at your option) any later version.
 
 #include "pipe.hpp"
+#include "constants.hpp"
 
 Pipe::Pipe()
 {
-  Pipe::y = rand() % 240 + 1 + (240 / 2);
-  Pipe::x = 640;
+  Pipe::y = rand() % (SCREEN_HEIGHT / 2) + 1 + (SCREEN_HEIGHT / 4);
+  Pipe::x = SCREEN_WIDTH;
+  Pipe::speed = PIPE_SPEED;
 }
 
 Pipe::~Pipe()
@@ -28,8 +30,8 @@ void Pipe::move()
 
 void Pipe::reset()
 {
-  Pipe::y = rand() % 240 + 1 + (240 / 2);
-  Pipe::x = 640;
+  Pipe::y = rand() % (SCREEN_HEIGHT / 2) + 1 + (SCREEN_HEIGHT / 4);
+  Pipe::x = SCREEN_WIDTH;
 }
 
 // EOF

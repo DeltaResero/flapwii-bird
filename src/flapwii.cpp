@@ -17,15 +17,9 @@
 
 #include <fstream>
 
-#define WSP_POINTER_CORRECTION_X 200
-#define WSP_POINTER_CORRECTION_Y 200
+#include "constants.hpp"
 
-const double sensitivity = 0.7;
-
-const int screenWidth = 640;
-const int screenHeight = 480;
-
-const float bird_x = screenWidth / 3;
+const float bird_x = BIRD_START_X;
 
 #include "physics.hpp"
 #include "pipe.hpp"
@@ -120,8 +114,8 @@ int main(void)
 
     if (isMenu)
     {
-      int cursorX = (ir.sx) * sensitivity;
-      int cursorY = (ir.sy - WSP_POINTER_CORRECTION_Y) * sensitivity;
+      int cursorX = (ir.sx) * WIIMOTE_SENSITIVITY;
+      int cursorY = (ir.sy - WSP_POINTER_CORRECTION_Y) * WIIMOTE_SENSITIVITY;
 
       GRRLIB_PrintfTTF(165, 70, flappy_font, "Flapwii Bird", 96, 0xf6ef29ff);
       GRRLIB_PrintfTTF(175, 300, flappy_font, "Press A to flap", 72,
@@ -140,15 +134,15 @@ int main(void)
 
       // Pipe 1
       GRRLIB_DrawImg(pipe_1.x, pipe_1.y, pipe, 0, 1, 1, GRRLIB_WHITE);
-      GRRLIB_DrawImg(pipe_1.x, pipe_1.y - 100, pipe, 180, -1, 1, GRRLIB_WHITE);
+      GRRLIB_DrawImg(pipe_1.x, pipe_1.y - PIPE_GAP, pipe, 180, -1, 1, GRRLIB_WHITE);
       pipe_1.move();
 
-      if (pipe_1.x < screenWidth / 2 && first_round)
+      if (pipe_1.x < SCREEN_WIDTH / 2 && first_round)
       {
         first_round = false;
       }
 
-      if (pipe_1.x < -51)
+      if (pipe_1.x < -(PIPE_WIDTH - 1))
       {
         pipe_1.reset();
       }
@@ -158,11 +152,11 @@ int main(void)
       if (!first_round)
       {
         GRRLIB_DrawImg(pipe_2.x, pipe_2.y, pipe, 0, 1, 1, GRRLIB_WHITE);
-        GRRLIB_DrawImg(pipe_2.x, pipe_2.y - 100, pipe, 180, -1, 1,
+        GRRLIB_DrawImg(pipe_2.x, pipe_2.y - PIPE_GAP, pipe, 180, -1, 1,
                        GRRLIB_WHITE);
         pipe_2.move();
 
-        if (pipe_2.x < -51)
+        if (pipe_2.x < -(PIPE_WIDTH - 1))
         {
           pipe_2.reset();
         }
@@ -180,7 +174,7 @@ int main(void)
       }
 
       // Show Bird
-      GRRLIB_DrawImg(bird_x, position.y, bird, physics.velocity * 1.3, 0.3, 0.3,
+      GRRLIB_DrawImg(bird_x, position.y, bird, physics.velocity * 1.3, BIRD_SCALE, BIRD_SCALE,
                      GRRLIB_WHITE);
     }
 

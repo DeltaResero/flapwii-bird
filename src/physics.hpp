@@ -13,6 +13,7 @@
 
 #include "pipe.hpp"
 #include "vec2.hpp"
+#include "collision.hpp"
 
 class Physics
 {
@@ -25,6 +26,11 @@ private:
   void reset();
   bool is_colliding(Pipe pipe_1, Pipe pipe_2);
   void update_score(Pipe pipe_1, Pipe pipe_2);
+
+  // Helper methods for collision detection
+  Hitbox get_bird_hitbox() const;
+  Hitbox get_pipe_top_hitbox(const Pipe& pipe) const;
+  Hitbox get_pipe_bottom_hitbox(const Pipe& pipe) const;
 
 public:
   Physics();

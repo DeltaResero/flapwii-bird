@@ -16,7 +16,9 @@ Physics::Physics()
 {
   Physics::position.x = BIRD_START_X;
   Physics::position.y = BIRD_START_Y;
+  Physics::velocity = 0;
 }
+
 Physics::~Physics()
 {
 }
@@ -46,11 +48,6 @@ Vec2 Physics::update_bird(bool flap, Pipe pipe_1, Pipe pipe_2)
   return Physics::position;
 }
 
-Vec2 Physics::get_position() const
-{
-  return position;
-}
-
 void Physics::reset()
 {
   Physics::position.x = BIRD_START_X;
@@ -62,50 +59,31 @@ void Physics::reset()
 
 bool Physics::is_colliding(Pipe pipe_1, Pipe pipe_2)
 {
-  // Bird bounding box
-  float bird_left = Physics::position.x;
-  float bird_right = Physics::position.x + (BIRD_WIDTH * BIRD_SCALE);
-  float bird_top = Physics::position.y;
-  float bird_bottom = Physics::position.y + (BIRD_HEIGHT * BIRD_SCALE);
+  const float bird_right = position.x + (BIRD_WIDTH * BIRD_SCALE);
+  const float bird_bottom = position.y + (BIRD_HEIGHT * BIRD_SCALE);
 
-  // Helper to check collision with a single pipe
-  auto check_pipe = [&](Pipe &p) -> bool
-  {
-    // Check horizontal overlap
-    if (bird_right >= p.x && bird_left <= p.x + PIPE_WIDTH)
-    {
-      // In the horizontal danger zone. Safe only if inside the vertical gap.
-      // Gap is between (p.y - PIPE_GAP) and p.y
-      // Hit top pipe if bird_top < p.y - PIPE_GAP
-      // Hit bottom pipe if bird_bottom > p.y
-      if (bird_top < p.y - PIPE_GAP || bird_bottom > p.y)
-      {
-        return true;
-      }
-    }
-    return false;
-  };
+  return
+    // Pipe 1
+    ((pipe_1.x <= bird_right && pipe_1.x + PIPE_WIDTH >= position.x) &&
+     (pipe_1.y <= bird_bottom || pipe_1.y - PIPE_GAP >= position.y)) ||
 
-  if (check_pipe(pipe_1) || check_pipe(pipe_2))
-  {
-    return true;
-  }
+    // Pipe 2
+    ((pipe_2.x <= bird_right && pipe_2.x + PIPE_WIDTH >= position.x) &&
+     (pipe_2.y <= bird_bottom || pipe_2.y - PIPE_GAP >= position.y)) ||
 
-  // Screen boundaries
-  if (bird_top < 0 || bird_top > SCREEN_HEIGHT)
-  {
-    return true;
-  }
-
-  return false;
+    // Screen bounds
+    position.y > SCREEN_HEIGHT || position.y < 0;
 }
 
 void Physics::update_score(Pipe pipe_1, Pipe pipe_2)
 {
-  if ((!Physics::pipe_iter && pipe_1.x + PIPE_WIDTH <= BIRD_START_X &&
-       pipe_1.x + PIPE_WIDTH + 20 >= BIRD_START_X) ||
-      (Physics::pipe_iter && pipe_2.x + PIPE_WIDTH <= BIRD_START_X &&
-       pipe_2.x + PIPE_WIDTH + 20 >= BIRD_START_X))
+  const float pipe_passed_x = BIRD_START_X;
+  const float tolerance = 20; // How wide the "scoring zone" is
+
+  if ((!Physics::pipe_iter && pipe_1.x + PIPE_WIDTH <= pipe_passed_x &&
+       pipe_1.x + PIPE_WIDTH + tolerance >= pipe_passed_x) ||
+      (Physics::pipe_iter && pipe_2.x + PIPE_WIDTH <= pipe_passed_x &&
+       pipe_2.x + PIPE_WIDTH + tolerance >= pipe_passed_x))
   {
     Physics::pipe_iter = !Physics::pipe_iter;
     Physics::score++;

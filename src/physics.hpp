@@ -31,7 +31,20 @@ public:
   ~Physics();
 
   Vec2 update_bird(bool flap, Pipe pipe_1, Pipe pipe_2);
-  Vec2 get_position() const;
+
+  // Add getters for encapsulation
+  Vec2 get_position() const
+  {
+    return position;
+  }
+  float get_x() const
+  {
+    return position.x;
+  }
+  float get_y() const
+  {
+    return position.y;
+  }
 
   float velocity;
   bool pipe_iter = false;

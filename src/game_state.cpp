@@ -166,7 +166,7 @@ void GameState::render_game(GRRLIB_texImg* bird_tex, GRRLIB_texImg* pipe_tex)
   // Render bird
   Vec2 bird_pos = physics.get_position();
   float bird_rotation = physics.velocity * 1.3f;
-  render_bird(bird_tex, BIRD_START_X, bird_pos.y, bird_rotation);
+  render_bird(bird_tex, bird_pos.x, bird_pos.y, bird_rotation);
 }
 
 void GameState::load_highscore()

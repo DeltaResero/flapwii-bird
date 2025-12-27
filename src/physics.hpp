@@ -23,7 +23,6 @@ private:
 
   Vec2 position;
 
-  void reset();
   bool is_colliding(Pipe pipe_1, Pipe pipe_2);
   void update_score(Pipe pipe_1, Pipe pipe_2);
 
@@ -37,6 +36,7 @@ public:
   ~Physics();
 
   Vec2 update_bird(bool flap, Pipe pipe_1, Pipe pipe_2);
+  void reset();
 
   // Add getters for encapsulation
   Vec2 get_position() const

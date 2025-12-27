@@ -25,7 +25,7 @@ Physics::~Physics()
 
 Vec2 Physics::update_bird(bool flap, Pipe pipe_1, Pipe pipe_2)
 {
-  if (flap)
+  if (flap && !dead)  // Only allow flapping when not dead
   {
     velocity = Physics::flap_height;
   }
@@ -36,13 +36,16 @@ Vec2 Physics::update_bird(bool flap, Pipe pipe_1, Pipe pipe_2)
 
   Physics::position.y += velocity;
 
-  Physics::dead = is_colliding(pipe_1, pipe_2);
-
-  Physics::update_score(pipe_1, pipe_2);
-
-  if (Physics::dead)
+  // Only check collision if not already dead
+  if (!dead)
   {
-    reset();
+    Physics::dead = is_colliding(pipe_1, pipe_2);
+  }
+
+  // Update score only when alive
+  if (!dead)
+  {
+    Physics::update_score(pipe_1, pipe_2);
   }
 
   return Physics::position;
@@ -55,6 +58,7 @@ void Physics::reset()
   Physics::velocity = 0;
   Physics::score = 0;
   Physics::pipe_iter = false;
+  Physics::dead = false;  // Reset dead state
 }
 
 Hitbox Physics::get_bird_hitbox() const
@@ -80,12 +84,12 @@ Hitbox Physics::get_pipe_top_hitbox(const Pipe& pipe) const
 
 Hitbox Physics::get_pipe_bottom_hitbox(const Pipe& pipe) const
 {
-  // Bottom pipe starts at pipe.y and extends down
+  // Bottom pipe starts at pipe.y and extends to ground level
   return Hitbox(
     pipe.x,
     pipe.y,
     PIPE_WIDTH,
-    SCREEN_HEIGHT - pipe.y
+    GROUND_Y - pipe.y
   );
 }
 
@@ -107,8 +111,8 @@ bool Physics::is_colliding(Pipe pipe_1, Pipe pipe_2)
     return true;
   }
 
-  // Check screen bounds (only top and bottom matter)
-  if (bird.top() < 0 || bird.bottom() > SCREEN_HEIGHT)
+  // Check screen bounds - bird dies if hitting top or ground
+  if (bird.top() < 0 || bird.bottom() >= GROUND_Y)
   {
     return true;
   }

@@ -28,10 +28,17 @@ private:
 
   bool first_round;
   bool is_menu;
+  bool is_dying;  // Track death animation state
 
   // Cursor position for menu
   int cursor_x;
   int cursor_y;
+
+  // Ground scroll offset for parallax effect (Visual loop wrap for grass)
+  float ground_scroll_offset;
+
+  // Continuous scroll tracker
+  float world_scroll_x;
 
   int score;
   int highscore;
@@ -41,6 +48,7 @@ private:
 
   void update_game(u32 buttons);
   void update_menu(u32 buttons, const ir_t &ir);
+  void update_death_fall(u32 buttons);
   void handle_collision();
   void update_score_text();
 
@@ -50,6 +58,7 @@ private:
   void render_pipe(GRRLIB_texImg* pipe_tex, const Pipe& pipe);
   void render_bird(GRRLIB_texImg* bird_tex, float x, float y, float rotation);
   void render_score(GRRLIB_ttfFont* font);
+  void render_ground();  // Render scrolling ground with procedural dirt
 
 public:
   GameState();

@@ -36,7 +36,11 @@ GameState::GameState()
   , world_scroll_x(0.0f)
   , score(0)
   , highscore(0)
+  , last_score(0)
 {
+  // Initialize Audio System
+  audio = std::make_unique<Audio>();
+
   bird_position.x = BIRD_START_X;
   bird_position.y = BIRD_START_Y;
   load_highscore();
@@ -76,6 +80,7 @@ void GameState::update_menu(u32 buttons, const ir_t &ir)
 
   if (buttons & WPAD_BUTTON_A)
   {
+    audio->PlayTransition(); // Play transition sound
     is_menu = false;
 
     // Reset State
@@ -91,8 +96,21 @@ void GameState::update_menu(u32 buttons, const ir_t &ir)
 
 void GameState::update_game(u32 buttons)
 {
-  bird_position = physics.update_bird(buttons & WPAD_BUTTON_A, pipe_1, pipe_2);
+  bool did_flap = buttons & WPAD_BUTTON_A;
+  bird_position = physics.update_bird(did_flap, pipe_1, pipe_2);
+
+  if (did_flap && !physics.dead)
+  {
+    audio->PlayFlap();
+  }
+
   score = physics.score;
+
+  if (score > last_score)
+  {
+    audio->PlayScore();
+    last_score = score;
+  }
 
   // --------------------------------------------------------------------------
   // Pipe Management
@@ -136,8 +154,19 @@ void GameState::update_game(u32 buttons)
   // State Checks
   // --------------------------------------------------------------------------
 
-  if (physics.dead)
+  // Check if we just died this frame
+  if (physics.dead && !is_dying)
   {
+    audio->PlayHit(); // Always play hit sound on death
+
+    // Only play the "die" (fall) sound if we are NOT hitting the ground directly.
+    // If we hit a pipe or the ceiling, we fall.
+    // If we hit the ground, we just stop (no fall sound).
+    if (bird_position.y + (BIRD_HEIGHT * BIRD_SCALE) < GROUND_Y)
+    {
+      audio->PlayDie();
+    }
+
     is_dying = true;
   }
 
@@ -158,6 +187,9 @@ void GameState::update_death_fall(u32 buttons)
   // Check if bird hit the ground
   if (bird_position.y + (BIRD_HEIGHT * BIRD_SCALE) >= GROUND_Y)
   {
+    // Do NOT play sound here.
+    // If we fell from a pipe, sfx_die played earlier.
+    // If we hit the ground directly, sfx_hit played earlier.
     handle_collision();
   }
 }
@@ -169,6 +201,7 @@ void GameState::handle_collision()
   pipe_1.reset();
   pipe_2.reset();
   score = 0;
+  last_score = 0;
   is_menu = true;
   ground_scroll_offset = 0;
   world_scroll_x = 0;

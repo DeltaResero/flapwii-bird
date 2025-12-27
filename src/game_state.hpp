@@ -13,8 +13,10 @@
 
 #include "physics.hpp"
 #include "pipe.hpp"
+#include "audio.hpp"
 #include <grrlib.h>
 #include <wiiuse/wpad.h>
+#include <memory>
 
 class GameState
 {
@@ -23,18 +25,21 @@ private:
   Pipe pipe_2;
   Physics physics;
 
+  // Audio System
+  std::unique_ptr<Audio> audio;
+
   // Cache bird position to avoid running physics in render
   Vec2 bird_position;
 
   bool first_round;
   bool is_menu;
-  bool is_dying;  // Track death animation state
+  bool is_dying;
 
   // Cursor position for menu
   int cursor_x;
   int cursor_y;
 
-  // Ground scroll offset for parallax effect (Visual loop wrap for grass)
+  // Ground scroll offset for parallax effect
   float ground_scroll_offset;
 
   // Continuous scroll tracker
@@ -42,6 +47,7 @@ private:
 
   int score;
   int highscore;
+  int last_score;
 
   char score_text[32];
   char highscore_text[32];
@@ -58,7 +64,7 @@ private:
   void render_pipe(GRRLIB_texImg* pipe_tex, const Pipe& pipe);
   void render_bird(GRRLIB_texImg* bird_tex, float x, float y, float rotation);
   void render_score(GRRLIB_ttfFont* font);
-  void render_ground();  // Render scrolling ground with procedural dirt
+  void render_ground();
 
 public:
   GameState();

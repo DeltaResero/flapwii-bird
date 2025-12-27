@@ -47,14 +47,15 @@ STRIP              := $(DEVKITPPC)/bin/powerpc-eabi-strip
 # Options for code generation
 #---------------------------------------------------------------------------------
 CFLAGS             := -g -O3 -Wall -DGEKKO $(MACHDEP) $(INCLUDE)
-CXXFLAGS           := $(CFLAGS) -Wno-register
+CXXFLAGS           := $(CFLAGS) -Wno-register -std=c++23
 LDFLAGS            := -g $(MACHDEP) -Wl,-Map,$(notdir $@).map -Wl,--section-start,.init=0x81000000
 
 #---------------------------------------------------------------------------------
 # Libraries to link with
 #---------------------------------------------------------------------------------
+# CHANGED: -lasnd -> -laesnd
 LIBS               := -lfreetype -lbz2 -lpng -ljpeg -lz -lfat \
-                      -lwiiuse -lbte -lasnd -logc -lm -lvorbisidec -logg
+                      -lwiiuse -lbte -laesnd -logc -lm -lvorbisidec -logg
 
 #---------------------------------------------------------------------------------
 # List of directories containing libraries

@@ -24,7 +24,7 @@ public:
   void PlayFlap();
   void PlayScore();
   void PlayHit();
-  void PlayDie();
+  void PlayFall();
   void PlayTransition();
 
 private:
@@ -32,14 +32,14 @@ private:
   std::unique_ptr<Voice> voice_flap;
   std::unique_ptr<Voice> voice_score;
   std::unique_ptr<Voice> voice_hit;
-  std::unique_ptr<Voice> voice_die;
+  std::unique_ptr<Voice> voice_fall;
   std::unique_ptr<Voice> voice_transition;
 
   // Sounds (Data)
   std::unique_ptr<Sound> sound_flap;
   std::unique_ptr<Sound> sound_score;
   std::unique_ptr<Sound> sound_hit;
-  std::unique_ptr<Sound> sound_die;
+  std::unique_ptr<Sound> sound_fall;
   std::unique_ptr<Sound> sound_transition;
 
   // Helper to parse WAV data from memory

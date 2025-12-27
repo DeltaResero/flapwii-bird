@@ -159,12 +159,12 @@ void GameState::update_game(u32 buttons)
   {
     audio->PlayHit(); // Always play hit sound on death
 
-    // Only play the "die" (fall) sound if we are NOT hitting the ground directly.
+    // Only play the "fall" sound if we are NOT hitting the ground directly.
     // If we hit a pipe or the ceiling, we fall.
     // If we hit the ground, we just stop (no fall sound).
     if (bird_position.y + (BIRD_HEIGHT * BIRD_SCALE) < GROUND_Y)
     {
-      audio->PlayDie();
+      audio->PlayFall();
     }
 
     is_dying = true;
@@ -188,7 +188,7 @@ void GameState::update_death_fall(u32 buttons)
   if (bird_position.y + (BIRD_HEIGHT * BIRD_SCALE) >= GROUND_Y)
   {
     // Do NOT play sound here.
-    // If we fell from a pipe, sfx_die played earlier.
+    // If we fell from a pipe, sfx_fall played earlier.
     // If we hit the ground directly, sfx_hit played earlier.
     handle_collision();
   }
@@ -314,7 +314,7 @@ void GameState::render_ground()
   // world-space so the hashing remains consistent while scrolling.
   int start_world_x = (scroll_int / 4) * 4;
 
-  // Leave a 4px buffer at top/bottom to avoid drawing noise too close to edges
+  // Leave a 4px buffer to avoid drawing noise too close to edges
   for (int y = dirt_y + 4; y < SCREEN_HEIGHT - 4; y += 4)
   {
     // Iterate through WORLD coordinates that are currently visible on screen

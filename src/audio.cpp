@@ -25,8 +25,8 @@ extern "C" {
     extern const u8 sfx_hit_wav[];
     extern const u8 sfx_hit_wav_end[];
 
-    extern const u8 sfx_die_wav[];
-    extern const u8 sfx_die_wav_end[];
+    extern const u8 sfx_fall_wav[];
+    extern const u8 sfx_fall_wav_end[];
 
     extern const u8 sfx_transition_wav[];
     extern const u8 sfx_transition_wav_end[];
@@ -41,14 +41,14 @@ Audio::Audio()
   voice_flap = std::make_unique<Voice>();
   voice_score = std::make_unique<Voice>();
   voice_hit = std::make_unique<Voice>();
-  voice_die = std::make_unique<Voice>();
+  voice_fall = std::make_unique<Voice>();
   voice_transition = std::make_unique<Voice>();
 
   // Load Sounds
   sound_flap = LoadWav(sfx_flap_wav, sfx_flap_wav_end - sfx_flap_wav);
   sound_score = LoadWav(sfx_score_wav, sfx_score_wav_end - sfx_score_wav);
   sound_hit = LoadWav(sfx_hit_wav, sfx_hit_wav_end - sfx_hit_wav);
-  sound_die = LoadWav(sfx_die_wav, sfx_die_wav_end - sfx_die_wav);
+  sound_fall = LoadWav(sfx_fall_wav, sfx_fall_wav_end - sfx_fall_wav);
   sound_transition = LoadWav(sfx_transition_wav, sfx_transition_wav_end - sfx_transition_wav);
 }
 
@@ -57,7 +57,7 @@ Audio::~Audio()
   voice_flap.reset();
   voice_score.reset();
   voice_hit.reset();
-  voice_die.reset();
+  voice_fall.reset();
   voice_transition.reset();
 
   AESND_Pause(true);
@@ -90,12 +90,12 @@ void Audio::PlayHit()
   }
 }
 
-void Audio::PlayDie()
+void Audio::PlayFall()
 {
-  if (sound_die)
+  if (sound_fall)
   {
-    voice_die->SetVolume(255);
-    voice_die->Play(*sound_die);
+    voice_fall->SetVolume(255);
+    voice_fall->Play(*sound_fall);
   }
 }
 
